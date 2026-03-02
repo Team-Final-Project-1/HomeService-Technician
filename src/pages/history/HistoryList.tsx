@@ -1,4 +1,4 @@
-import { Search, SquarePen, ChevronDown } from "lucide-react";
+import { Search, SquarePen, ChevronDown, MapPin } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
 
 const services = [
@@ -172,8 +172,8 @@ const HistoryList: React.FC<HistoryListProps> = ({ onViewDetail }) => {
         </div>
       </div>
 
-      {/* Table Container */}
-      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm relative">
+      {/* Table Container (Desktop) */}
+      <div className="hidden md:block bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm relative">
         {isLoading && (
           <div className="absolute inset-0 bg-white/50 backdrop-blur-sm z-10 flex items-center justify-center">
             <div className="w-8 h-8 border-4 border-[#336DF2] border-t-transparent rounded-full animate-spin"></div>
@@ -217,6 +217,65 @@ const HistoryList: React.FC<HistoryListProps> = ({ onViewDetail }) => {
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Card Layout (Mobile) */}
+      <div className="md:hidden flex flex-col gap-4">
+        {filteredData.length > 0 ? (
+          filteredData.map((item, index) => (
+            <div 
+              key={index}
+              onClick={() => onViewDetail(item.orderId)}
+              className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex flex-col gap-4 cursor-pointer active:bg-gray-50 transition-colors"
+            >
+              <h3 className="text-[18px] font-bold text-gray-900 leading-tight">
+                {item.service}
+              </h3>
+              
+              <div className="flex flex-col gap-1">
+                <span className="text-[14px] text-gray-400 font-medium body-3">วันเวลาดำเนินการ</span>
+                <span className="text-[16px] text-blue-600 font-semibold body-3">{item.date}</span>
+              </div>
+
+              <div className="grid grid-cols-[100px_1fr] gap-y-2.5 items-start">
+                <span className="text-gray-500 text-[14px] font-medium body-3">รายการ</span>
+                <span className="text-gray-800 text-[14px] font-medium body-3">
+                  {item.service} 9,000 - 18,000 BTU...
+                </span>
+
+                <span className="text-gray-500 text-[14px] font-medium body-3">รหัสคำสั่งซ่อม</span>
+                <span className="text-gray-800 text-[14px] font-medium body-3">{item.orderId}</span>
+
+                <span className="text-gray-500 text-[14px] font-medium body-3">ราคารวม</span>
+                <span className="text-gray-900 text-[14px] font-bold body-3">{item.price}</span>
+
+                <span className="text-gray-500 text-[14px] font-medium body-3">สถานที่</span>
+                <div className="flex flex-col gap-1">
+                  <span className="text-gray-800 text-[14px] font-medium body-3 leading-relaxed">
+                    444/4 คอนโดศุภาลัย เสนานิคม จตุจักร กรุงเทพฯ
+                  </span>
+                  <div className="flex items-center gap-1.5 text-blue-600 font-bold text-[13px]">
+                    <MapPin size={14} fill="currentColor" fillOpacity={0.1} />
+                    <span className="underline">ดูแผนที่</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button className="flex-1 py-2.5 border border-blue-600 text-blue-600 font-bold rounded-lg text-[14px]">
+                  ลบรายการ
+                </button>
+                <button className="flex-1 py-2.5 bg-blue-600 text-white font-bold rounded-lg text-[14px]">
+                  รายละเอียด
+                </button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="bg-white rounded-xl border border-gray-100 p-10 text-center text-gray-400 body-3">
+            {isLoading ? "กำลังโหลดข้อมูล..." : "ไม่พบรายการที่ค้นหา"}
+          </div>
+        )}
       </div>
     </div>
   );
