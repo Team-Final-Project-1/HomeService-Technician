@@ -18,8 +18,6 @@ const TechnicianLayout: React.FC<TechnicianLayoutProps> = ({ children }) => {
       <Sidebar />
 
       {/* Content wrapper */}
-      {/* md:pl-[210px] เว้นที่ให้ sidebar desktop */}
-      {/* pt-17 เว้นที่ให้ mobile top navbar */}
       <div className="flex-1 flex flex-col min-w-0 pt-17 md:pt-0 md:pl-65 md:w-full">
         {/* Desktop Header */}
         <header className="hidden md:flex items-center h-16 bg-white border-b border-gray-200 px-8 shrink-0">
@@ -29,14 +27,14 @@ const TechnicianLayout: React.FC<TechnicianLayoutProps> = ({ children }) => {
         </header>
 
         {/* Mobile Header (ใต้ mobile navbar) */}
-        <header className="flex md:hidden items-center h-20 bg-white border-b border-gray-200 px-5 shrink-0">
-          <h1 className="text-[16px] font-semibold text-gray-900">
+        <header className="flex md:hidden items-center h-16 bg-white border-b border-gray-200 px-5 shrink-0">
+          <h1 className="text-[16px] font-semibold text-utility-black">
             {pageTitle}
           </h1>
         </header>
 
         {/* Main content */}
-        <main className="flex-1 overflow-auto bg-[#F6F7FB]">
+        <main className="flex-1 overflow-auto bg-[#F3F4F6]">
           <div className="p-6">{children}</div>
         </main>
       </div>

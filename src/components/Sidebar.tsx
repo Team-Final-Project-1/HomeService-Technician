@@ -53,7 +53,7 @@ const Sidebar = () => {
           className="flex items-center gap-2 bg-blue-100 px-3 py-2 rounded-md cursor-pointer"
         >
           <img src="/house 1.png" className="h-5 w-5" alt="logo" />
-          <span className="text-[#336DF2] text-sm font-semibold">
+          <span className="text-[#336DF2] text-base font-semibold">
             HomeServices
           </span>
         </div>
@@ -91,13 +91,13 @@ const Sidebar = () => {
         `}
       >
         {/* Logo — desktop only */}
-        <div className="hidden md:flex p-5 pb-8">
+        <div className="hidden md:flex p-5 pb-8 px-10">
           <div
             onClick={() => router.push("/")}
-            className="flex items-center gap-2 bg-blue-100 px-3 py-2 rounded-md cursor-pointer w-full justify-center"
+            className="flex items-center gap-2 bg-blue-100 py-3 rounded-md cursor-pointer w-full justify-center"
           >
             <img src="/house 1.png" className="h-5 w-5" alt="logo" />
-            <span className="text-[#336DF2] text-sm font-semibold">
+            <span className="text-[#336DF2] text-base font-semibold">
               HomeServices
             </span>
           </div>
