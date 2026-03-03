@@ -8,10 +8,10 @@ export default function TechnicianPendingPage() {
   // ================= STATE =================
   const [search, setSearch] = useState<string>("");
 
-  // service type
+  // ✅ service type ชัดเจน
   const [service, setService] = useState<string>("ทั้งหมด");
 
-  // sort type ช
+  // ✅ sort type ชัดเจน (สำคัญมาก)
   const [sort, setSort] =
     useState<"nearest" | "latest">("nearest");
 
