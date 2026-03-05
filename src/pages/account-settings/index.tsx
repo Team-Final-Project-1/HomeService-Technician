@@ -3,19 +3,6 @@ import { RefreshCw } from "lucide-react";
 import TechnicianLayout from "@/components/layout/TechnicianLayout";
 import axios from "axios";
 
-// ตัวอย่างข้อมูลบริการทั้งหมด (ในระบบจริงอาจดึงมาจาก API)
-const ALL_SERVICES = [
-  { id: 1, name: "ล้างแอร์" },
-  { id: 2, name: "ติดตั้งแอร์" },
-  { id: 3, name: "ทำความสะอาดทั่วไป" },
-  { id: 4, name: "ซ่อมแอร์" },
-  { id: 5, name: "ซ่อมเครื่องซักผ้า" },
-  { id: 6, name: "ติดตั้งเตาแก๊ส" },
-  { id: 7, name: "ติดตั้งเครื่องดูดควัน" },
-  { id: 8, name: "ติดตั้งซักโครก" },
-  { id: 9, name: "ติดตั้งเครื่องทำน้ำอุ่น" },
-];
-
 interface ServiceItem {
   id: number;
   name: string;
@@ -53,7 +40,7 @@ const AccountSettingsPage = () => {
   const fetchProfile = async () => {
     setIsLoading(true);
     try {
-      const { data } = await axios.get(`${API_URL}/api/technicians/profile`);
+      const { data } = await axios.get<TechnicianProfile>(`${API_URL}/api/technicians/profile`);
 
       // นำข้อมูลจาก API ไปใส่ใน state ทุก field
       setFirstName(data.first_name ?? "");
@@ -74,15 +61,16 @@ const AccountSettingsPage = () => {
       // allServices → ทุกบริการ (สำหรับแสดง checkbox)
       // selectedServices → เฉพาะที่ช่างรับ (is_selected = true)
       setAllServices(
-        data.services.map((s: ServiceItem) => ({
+        data.services.map((s) => ({
           id: s.id,
           name: s.name,
+          is_selected: s.is_selected,
         })),
       );
       setSelectedServices(
         data.services
-          .filter((s: ServiceItem) => s.is_selected)
-          .map((s: ServiceItem) => s.id),
+          .filter((s) => s.is_selected)
+          .map((s) => s.id),
       );
     } catch (err) {
       setError("ไม่สามารถโหลดข้อมูลได้");

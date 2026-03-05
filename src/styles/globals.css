@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -256,7 +258,6 @@
     }
   }
   /* Spinner for Processing state */
- 
 
   /* --- Secondary Style --- */
   .btn-secondary {
@@ -307,8 +308,6 @@
 /* Selects */
 
 /* Cards */
-
-
 
 .dark {
   --background: oklch(0.145 0 0);
