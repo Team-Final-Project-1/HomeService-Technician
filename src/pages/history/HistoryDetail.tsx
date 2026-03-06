@@ -1,19 +1,8 @@
 import { ChevronLeft, MapPin, Star } from "lucide-react";
 import React from "react";
+import { HistoryDetailData } from "./history.types";
 
-export interface HistoryDetailData {
-  orderId: string;
-  service: string;
-  category: string;
-  items: string;
-  date: string;
-  location: string;
-  price: string;
-  customerName: string;
-  phone: string;
-  rating: number;
-  feedback: string;
-}
+
 
 interface HistoryDetailProps {
   order: HistoryDetailData;

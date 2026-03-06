@@ -1,5 +1,7 @@
 import { Search, SquarePen, ChevronDown, MapPin } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
+import { getHistory } from "./history.service";
+import { HistoryOrder } from "./history.types";
 
 const services = [
   "ทั้งหมด",
@@ -12,81 +14,36 @@ const services = [
   "ติดตั้งเครื่องทำน้ำอุ่น",
 ];
 
-export interface HistoryOrder {
-  orderId: string;
-  service: string;
-  date: string;
-  price: string;
-}
 
-const mockHistory: HistoryOrder[] = [
-  {
-    service: "ล้างแอร์",
-    date: "25/04/2563 เวลา 13.00 น.",
-    orderId: "AD04071205",
-    price: "1,550.00 ฿",
-  },
-  {
-    service: "ทำความสะอาดทั่วไป",
-    date: "25/04/2563 เวลา 13.00 น.",
-    orderId: "AD04071205",
-    price: "1,550.00 ฿",
-  },
-  {
-    service: "ติดตั้งเครื่องดูดควัน",
-    date: "25/04/2563 เวลา 13.00 น.",
-    orderId: "AD04071205",
-    price: "1,550.00 ฿",
-  },
-  {
-    service: "ล้างแอร์",
-    date: "25/04/2563 เวลา 13.00 น.",
-    orderId: "AD04071205",
-    price: "1,550.00 ฿",
-  },
-  {
-    service: "ล้างแอร์",
-    date: "25/04/2563 เวลา 13.00 น.",
-    orderId: "AD04071205",
-    price: "1,550.00 ฿",
-  },
-  {
-    service: "ติดตั้งเครื่องทำน้ำอุ่น",
-    date: "25/04/2563 เวลา 13.00 น.",
-    orderId: "AD04071205",
-    price: "1,550.00 ฿",
-  },
-  {
-    service: "ติดตั้งเครื่องทำน้ำอุ่น",
-    date: "25/04/2563 เวลา 13.00 น.",
-    orderId: "AD04071205",
-    price: "1,550.00 ฿",
-  },
-  {
-    service: "ติดตั้งเครื่องทำน้ำอุ่น",
-    date: "25/04/2563 เวลา 13.00 น.",
-    orderId: "AD04071205",
-    price: "1,550.00 ฿",
-  },
-  {
-    service: "ติดตั้งเครื่องทำน้ำอุ่น",
-    date: "25/04/2563 เวลา 13.00 น.",
-    orderId: "AD04071205",
-    price: "1,550.00 ฿",
-  },
-];
+
 
 interface HistoryListProps {
   onViewDetail: (orderId: string) => void;
 }
 
 const HistoryList: React.FC<HistoryListProps> = ({ onViewDetail }) => {
-  const [data, setData] = useState<HistoryOrder[]>(mockHistory);
-  const [isLoading, setIsLoading] = useState(false);
+  const [data, setData] = useState<HistoryOrder[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterValue, setFilterValue] = useState("ทั้งหมด");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        setIsLoading(true);
+        const historyData = await getHistory();
+        setData(historyData);
+      } catch (error) {
+        console.error("Failed to fetch history:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchHistory();
+  }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -112,6 +69,7 @@ const HistoryList: React.FC<HistoryListProps> = ({ onViewDetail }) => {
 
     return matchesSearch && matchesFilter;
   });
+
 
   return (
     <div className="flex flex-col gap-6">

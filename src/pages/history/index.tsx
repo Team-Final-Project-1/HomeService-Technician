@@ -1,43 +1,57 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TechnicianLayout from "@/components/TechnicianLayout";
-import HistoryList, { HistoryOrder } from "./HistoryList";
-import HistoryDetail, { HistoryDetailData } from "./HistoryDetail";
-
-const mockDetails: Record<string, HistoryDetailData> = {
-  "AD04071205": {
-    orderId: "AD04071205",
-    service: "ล้างแอร์",
-    category: "บริการทั่วไป",
-    items: "ล้างแอร์ 9,000 - 18,000 BTU, ติดผนัง 2 เครื่อง",
-    date: "25/04/2563 เวลา 13.00 น.",
-    location: "444/4 คอนโดศุภาลัย เสนานิคม จตุจักร กรุงเทพฯ",
-    price: "1,550.00 ฿",
-    customerName: "สมศรี จันทร์อังคารพุธ",
-    phone: "080 000 1233",
-    rating: 4,
-    feedback: "เก็บงานเรียบร้อยมาก เสร็จไว มาตรงตามเวลานัดเลยค่ะ"
-  }
-};
+import HistoryList from "./HistoryList";
+import HistoryDetail from "./HistoryDetail";
+import { HistoryDetailData, HistoryOrder } from "./history.types";
+import { getHistoryDetail } from "./history.service";
 
 const HistoryPage = () => {
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<HistoryDetailData | null>(null);
+  const [isDetailLoading, setIsDetailLoading] = useState(false);
 
-  const selectedOrder = selectedOrderId ? mockDetails[selectedOrderId] : null;
+  useEffect(() => {
+    if (selectedOrderId) {
+      const fetchDetail = async () => {
+        try {
+          setIsDetailLoading(true);
+          const detail = await getHistoryDetail(selectedOrderId);
+          setSelectedOrder(detail);
+        } catch (error) {
+          console.error("Failed to fetch order detail:", error);
+        } finally {
+          setIsDetailLoading(false);
+        }
+      };
+      fetchDetail();
+    } else {
+      setSelectedOrder(null);
+    }
+  }, [selectedOrderId]);
 
   return (
     <TechnicianLayout>
       {selectedOrderId === null ? (
         <HistoryList onViewDetail={(id) => setSelectedOrderId(id)} />
       ) : (
-        selectedOrder && (
-          <HistoryDetail 
-            order={selectedOrder} 
-            onBack={() => setSelectedOrderId(null)} 
-          />
-        )
+        <>
+          {isDetailLoading ? (
+            <div className="flex items-center justify-center p-20">
+              <div className="w-12 h-12 border-4 border-[#336DF2] border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          ) : (
+            selectedOrder && (
+              <HistoryDetail 
+                order={selectedOrder} 
+                onBack={() => setSelectedOrderId(null)} 
+              />
+            )
+          )}
+        </>
       )}
     </TechnicianLayout>
   );
 };
+
 
 export default HistoryPage;
