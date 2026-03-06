@@ -200,7 +200,7 @@ const AccountSettingsPage = () => {
       <button
         onClick={handleSave}
         disabled={isSaving}
-        className="px-5 py-2 rounded-lg bg-blue-600 text-white text-[16px] font-medium hover:bg-blue-700 transition-colors cursor-pointer disabled:opacity-70 min-w-[80px] flex items-center justify-center"
+        className="px-5 py-2 rounded-lg bg-blue-600 text-white text-[16px] font-medium hover:bg-blue-700 transition-colors cursor-pointer disabled:opacity-70 min-w-20 flex items-center justify-center"
       >
         {isSaving ? <Spinner className="w-5 h-5 text-white" /> : "ยืนยัน"}
       </button>
@@ -230,7 +230,7 @@ const AccountSettingsPage = () => {
                 </label>
                 <input
                   type="text"
-                  value={firstName} // 🔄 เปลี่ยนจาก hardcode → state จาก API
+                  value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   className="flex-1 min-w-0 h-13 px-4 border border-gray-300 rounded-lg text-[16px] text-black outline-none focus:border-blue-500 transition-colors sm:max-w-xl"
                 />
@@ -242,7 +242,7 @@ const AccountSettingsPage = () => {
                 </label>
                 <input
                   type="text"
-                  value={lastName} // 🔄 เปลี่ยนจาก hardcode → state จาก API
+                  value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   className="flex-1 min-w-0 h-13 px-4 border border-gray-300 rounded-lg text-[16px] text-black outline-none focus:border-blue-500 transition-colors sm:max-w-xl"
                 />
@@ -254,7 +254,7 @@ const AccountSettingsPage = () => {
                 </label>
                 <input
                   type="tel"
-                  value={phone} // 🔄 เปลี่ยนจาก hardcode → state จาก API
+                  value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   className="flex-1 min-w-0 h-13 px-4 border border-gray-300 rounded-lg text-[16px] text-black outline-none focus:border-blue-500 transition-colors sm:max-w-xl"
                 />
@@ -268,7 +268,6 @@ const AccountSettingsPage = () => {
                   <div className="flex-1 min-h-11 px-4 py-2.5 border border-gray-300 rounded-lg text-[16px] text-gray-500 leading-relaxed overflow-hidden sm:max-w-xl">
                     {location || "ยังไม่มีข้อมูลตำแหน่ง"}
                   </div>
-                  {/* 🔄 เปลี่ยน onClick → handleRefreshLocation */}
                   <button
                     onClick={handleRefreshLocation}
                     className="flex items-center justify-center gap-2 h-13 w-28 px-5 border border-blue-600 rounded-lg text-[16px] text-blue-600 hover:bg-gray-50 transition-colors cursor-pointer shrink-0 font-medium"
