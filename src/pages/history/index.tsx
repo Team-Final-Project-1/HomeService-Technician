@@ -7,7 +7,9 @@ import { getHistoryDetail } from "@/services/history/history.service";
 
 const HistoryPage = () => {
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
-  const [selectedOrder, setSelectedOrder] = useState<HistoryDetailData | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<HistoryDetailData | null>(
+    null,
+  );
   const [isDetailLoading, setIsDetailLoading] = useState(false);
 
   useEffect(() => {
@@ -41,9 +43,9 @@ const HistoryPage = () => {
             </div>
           ) : (
             selectedOrder && (
-              <HistoryDetail 
-                order={selectedOrder} 
-                onBack={() => setSelectedOrderId(null)} 
+              <HistoryDetail
+                order={selectedOrder}
+                onBack={() => setSelectedOrderId(null)}
               />
             )
           )}
@@ -52,6 +54,5 @@ const HistoryPage = () => {
     </TechnicianLayout>
   );
 };
-
 
 export default HistoryPage;
