@@ -1,19 +1,19 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
-import LoadingScreen from "@/components/common/LoadingScreen";
+import AuthenLoadingScreen from "./AuthenLoadingScreen";
 
 interface AuthenticationRouteProps {
   isLoading: boolean | null;
   isAuthenticated: boolean;
   children: React.ReactNode;
-  bypassRedirect?: boolean; // ← เพิ่มตรงนี้
+  bypassRedirect?: boolean;
 }
 
 const AuthenticationRoute = ({
   isLoading,
   isAuthenticated,
   children,
-  bypassRedirect = false, // ← default false
+  bypassRedirect = false,
 }: AuthenticationRouteProps) => {
   const router = useRouter();
 
@@ -25,13 +25,7 @@ const AuthenticationRoute = ({
   }, [isLoading, isAuthenticated, bypassRedirect]);
 
   if (isLoading === null || isLoading) {
-    return (
-      <div className="flex flex-col min-h-screen">
-        <div className="min-h-screen md:p-8">
-          <LoadingScreen />
-        </div>
-      </div>
-    );
+    return <AuthenLoadingScreen />;
   }
 
   if (isAuthenticated && !bypassRedirect) {

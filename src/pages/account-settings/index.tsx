@@ -292,7 +292,7 @@ const AccountSettingsPage = () => {
             </div>
 
             {/* Section 2: สถานะบัญชี — ไม่เปลี่ยน layout */}
-            <div className="px-4 py-2 sm:px-4 sm:py-4 sm:flex sm:items-start sm:gap-24">
+            <div className="px-6 py-2 sm:px-8 sm:py-4 sm:flex sm:items-start sm:gap-24">
               <h2 className="text-[20px] font-semibold text-black mb-4">
                 สถานะบัญชี
               </h2>
