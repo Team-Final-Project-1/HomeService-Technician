@@ -2,9 +2,7 @@ import { historyAxios } from "./history.axios";
 import { HistoryOrder, HistoryDetailData } from "./history.types";
 
 export const getHistory = async (): Promise<HistoryOrder[]> => {
-  const response = await historyAxios.get("technician/history", {
-    params: { technicianId: 34 }
-  });
+  const response = await historyAxios.get("technician/history");
   
   return response.data.map((item: { order_code: string; service_name: string; date_time: string; total_price: string }) => ({
     orderId: item.order_code,
