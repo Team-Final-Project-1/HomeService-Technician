@@ -1,27 +1,36 @@
 import { MapPin } from "lucide-react";
 
+// ✅ interface ใหม่ ตรงกับ API response
 export interface ServiceRequest {
   id: number;
-  serviceName: string;
-  date: string;
-  time: string;
-  items: string;
-  orderCode: string;
-  totalPrice: string;
+  order_code: string;
+  net_price: number;
+  appointment_date: string;   // "2024-04-25"
+  appointment_time: string;   // "13:00:00"
   address: string;
-}
-
-interface ServiceRequestCardProps {
-  request: ServiceRequest;
-  onAccept: (request: ServiceRequest) => void;
-  onReject: (id: number) => void;
+  distance_km: number;
+  service_names: string[];
+  item_names: string[];
+  customer_lat: number | null;
+  customer_lng: number | null;
+  remark: string | null;
+  serviceName: string;   // service_names.join(", ")
+  date: string;          // format จาก appointment_date
+  time: string;          // format จาก appointment_time
+  items: string;         // item_names.join(", ")
+  orderCode: string;     // order_code
+  totalPrice: string;    // format จาก net_price
 }
 
 const ServiceRequestCard = ({
   request,
   onAccept,
   onReject,
-}: ServiceRequestCardProps) => {
+}: {
+  request: ServiceRequest;
+  onAccept: (request: ServiceRequest) => void;
+  onReject: (id: number) => void;
+}) => {
   return (
     <div className="bg-white rounded-xl border border-gray-300 p-5 font-prompt overflow-hidden">
       {/* Header */}

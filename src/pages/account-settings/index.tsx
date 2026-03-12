@@ -1,4 +1,4 @@
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import { RefreshCw } from "lucide-react";
 import TechnicianLayout from "@/components/layout/TechnicianLayout";
 import axios from "axios";
@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import SkeletonLoader from "./SkeletonLoader";
 import { useAuth } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import { useLocation } from "@/hooks/useLocation";
 
 interface ServiceItem {
   id: number;
@@ -33,18 +34,23 @@ const AccountSettingsPage = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
-  const [location, setLocation] = useState("");
-  const [latitude, setLatitude] = useState<number | null>(null);
-  const [longitude, setLongitude] = useState<number | null>(null);
   const [isAvailable, setIsAvailable] = useState(false);
   const [selectedServices, setSelectedServices] = useState<number[]>([]);
   const [allServices, setAllServices] = useState<ServiceItem[]>([]);
   const [error, setError] = useState<string | null>(null);
-
-  // แยก loading states
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+
+  const {
+    latitude,
+    longitude,
+    locationText,
+    isRefreshing,
+    refreshLocation,
+    setLatitude,
+    setLongitude,
+    setLocationText,
+  } = useLocation();
 
   const fetchProfile = async () => {
     setIsLoading(true);
@@ -53,38 +59,27 @@ const AccountSettingsPage = () => {
         `${API_URL}/api/technician-profile/profile`,
       );
 
-      // นำข้อมูลจาก API ไปใส่ใน state ทุก field
       setFirstName(data.first_name ?? "");
       setLastName(data.last_name ?? "");
       setPhone(data.phone ?? "");
       setIsAvailable(data.is_available ?? false);
+
+      // ✅ ใช้ setLatitude, setLongitude, setLocationText จาก hook แทน
       setLatitude(data.latitude ? Number(data.latitude) : null);
       setLongitude(data.longitude ? Number(data.longitude) : null);
-
-      // แปลง lat/long เป็นข้อความที่อยู่ (ถ้ามีค่า)
       if (data.latitude && data.longitude) {
         const lat = Number(data.latitude);
         const lng = Number(data.longitude);
-        setLocation(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
+        setLocationText(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
       }
 
-      // แยก services ออกเป็น 2 ส่วน:
-      // allServices → ทุกบริการ (สำหรับแสดง checkbox)
-      // selectedServices → เฉพาะที่ช่างรับ (is_selected = true)
-      setAllServices(
-        data.services.map((s) => ({
-          id: s.id,
-          name: s.name,
-          is_selected: s.is_selected,
-        })),
-      );
+      setAllServices(data.services.map((s) => ({ ...s })));
       setSelectedServices(
         data.services.filter((s) => s.is_selected).map((s) => s.id),
       );
     } catch (err) {
       setError("ไม่สามารถโหลดข้อมูลได้");
       toast.error("ไม่สามารถโหลดข้อมูลได้กรุณาลองใหม่อีกครั้ง");
-      console.error("Error fetching profile:", err);
     } finally {
       setIsLoading(false);
     }
@@ -93,49 +88,6 @@ const AccountSettingsPage = () => {
   useEffect(() => {
     fetchProfile();
   }, []);
-
-  // ขอ GPS จาก browser แล้วอัพเดต location + lat/long ใน state
-  const handleRefreshLocation = () => {
-    if (!navigator.geolocation) {
-      setError("Browser ไม่รองรับการดึงตำแหน่ง");
-      toast.error("Browser ไม่รองรับการดึงตำแหน่ง");
-      return;
-    }
-    setIsRefreshing(true);
-
-    // ขอ GPS จาก browser ถ้าสำเร็จจะได้ lat/lng → setState
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude: lat, longitude: lng } = position.coords; // coords คือ object ที่มีข้อมูลตำแหน่งของผู้ใช้
-        setLatitude(lat);
-        setLongitude(lng);
-
-        // แปลง lat/lng → ชื่อที่อยู่
-        try {
-          // Nominatim คือ API ของ OpenStreetMap ใช้ฟรีไม่ต้อง API key
-          const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=th`,
-            // accept-language=th → ขอชื่อที่อยู่เป็นภาษาไทย
-          );
-          const data = await response.json();
-
-          // data.display_name คือที่อยู่แบบเต็ม เช่น
-          // "332 ถนนสมมติ แขวงเสนานิคม เขตจตุจักร กรุงเทพมหานคร 10900 ประเทศไทย"
-          setLocation(data.display_name);
-        } catch {
-          // ถ้าแปลงที่อยู่ไม่สำเร็จ → fallback แสดงเป็น lat/lng แทน
-          setLocation(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
-        } finally {
-          setIsRefreshing(false);
-        }
-      },
-      () => {
-        setError("ไม่สามารถดึงตำแหน่งได้ กรุณาอนุญาตการเข้าถึง GPS");
-        toast.error("ไม่สามารถดึงตำแหน่งได้ กรุณาอนุญาตการเข้าถึง GPS");
-        setIsRefreshing(false);
-      },
-    );
-  };
 
   // handleSave: ส่งข้อมูลทั้งหมดไปอัปเดตที่ backend
   const handleSave = async () => {
@@ -276,14 +228,21 @@ const AccountSettingsPage = () => {
                   </label>
                   <div className="flex-1 flex flex-col sm:flex-row gap-5 min-w-0">
                     <div className="flex-1 min-h-11 px-4 py-2.5 border border-gray-300 rounded-lg text-[16px] text-gray-500 leading-relaxed overflow-hidden sm:max-w-xl">
-                      {location || "ยังไม่มีข้อมูลตำแหน่ง"}
+                      {locationText || "ยังไม่มีข้อมูลตำแหน่ง"}
                     </div>
                     <button
-                      onClick={handleRefreshLocation}
-                      className="flex items-center justify-center gap-2 h-13 w-28 px-5 border border-blue-600 rounded-lg text-[16px] text-blue-600 hover:bg-gray-50 transition-colors cursor-pointer shrink-0 font-medium"
+                      onClick={refreshLocation}
+                      disabled={isRefreshing}
+                      className="flex items-center justify-center gap-2 h-13 w-28 px-5 border border-blue-600 rounded-lg text-[16px] text-blue-600 hover:bg-gray-50 transition-colors cursor-pointer shrink-0 font-medium disabled:opacity-50"
                     >
-                      <RefreshCw size={17} />
-                      รีเฟรช
+                      {isRefreshing ? (
+                        <Spinner className="w-4 h-4 text-blue-600" />
+                      ) : (
+                        <>
+                          <RefreshCw size={17} />
+                          <span>รีเฟรช</span>
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>

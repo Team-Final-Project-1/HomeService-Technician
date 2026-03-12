@@ -1,16 +1,19 @@
 import { X, Mail } from "lucide-react";
 import { ServiceRequest } from "./ServiceRequestCard";
+import { Spinner } from "@/components/ui/spinner";
 
 interface AcceptModalProps {
   request: ServiceRequest;
   onConfirm: () => void;
   onCancel: () => void;
+  isConfirming: boolean;
 }
 
 const AcceptModal = ({
   request,
   onConfirm,
   onCancel,
+  isConfirming,
 }: AcceptModalProps) => {
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4 font-prompt">
@@ -51,9 +54,14 @@ const AcceptModal = ({
           </button>
           <button
             onClick={onConfirm}
-            className="flex-1 py-3 rounded-xl bg-blue-600 text-white text-[15px] font-medium hover:bg-blue-700 transition-colors cursor-pointer"
+            disabled={isConfirming}
+            className="flex-1 py-3 rounded-xl bg-blue-600 text-white text-[15px] font-medium hover:bg-blue-700 transition-colors cursor-pointer disabled:opacity-70 flex items-center justify-center"
           >
-            ยืนยัน
+            {isConfirming ? (
+              <Spinner className="w-5 h-5 text-white" />
+            ) : (
+              "ยืนยัน"
+            )}
           </button>
         </div>
       </div>
