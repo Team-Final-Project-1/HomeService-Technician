@@ -9,6 +9,24 @@ export const useLocation = (
   const [locationText, setLocationText] = useState("");
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  // ฟังก์ชันนี้จะถูกเรียกตอนเริ่มต้น เพื่อเซ็ต location จาก backend (ถ้ามี) และแปลง lat/lng เป็นที่อยู่ที่เป็น text
+  const initLocation = async (lat: number | null, lng: number | null) => {
+    if (!lat || !lng) return;
+    setLatitude(lat);
+    setLongitude(lng);
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=th`,
+      );
+      const data = await response.json();
+      setLocationText(data.display_name);
+    } catch (err) {
+      console.error("Error fetching location", err);
+      setLocationText(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
+    }
+  };
+
+  // ฟังก์ชันนี้จะถูกเรียกเมื่อกดปุ่ม refresh location เพื่อดึงพิกัดใหม่จาก GPS และอัปเดตไปยัง backend
   const refreshLocation = () => {
     if (!navigator.geolocation) {
       toast.error("Browser ไม่รองรับการดึงตำแหน่ง");
@@ -29,7 +47,8 @@ export const useLocation = (
           );
           const data = await response.json();
           setLocationText(data.display_name);
-        } catch {
+        } catch (err) {
+          console.error("Error fetching location", err);
           setLocationText(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
         } finally {
           setIsRefreshing(false);
@@ -51,6 +70,7 @@ export const useLocation = (
     locationText,
     isRefreshing,
     refreshLocation,
+    initLocation,
     setLatitude,
     setLongitude,
     setLocationText,

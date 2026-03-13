@@ -47,6 +47,7 @@ const AccountSettingsPage = () => {
     locationText,
     isRefreshing,
     refreshLocation,
+    initLocation,
     setLatitude,
     setLongitude,
     setLocationText,
@@ -70,7 +71,11 @@ const AccountSettingsPage = () => {
       if (data.latitude && data.longitude) {
         const lat = Number(data.latitude);
         const lng = Number(data.longitude);
-        setLocationText(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
+        // ✅ แทนที่ setLocationText เดิม
+        await initLocation(
+          data.latitude ? Number(data.latitude) : null,
+          data.longitude ? Number(data.longitude) : null,
+        );
       }
 
       setAllServices(data.services.map((s) => ({ ...s })));

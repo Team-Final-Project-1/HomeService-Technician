@@ -39,32 +39,65 @@ const mapToServiceRequest = (raw: any): ServiceRequest => ({
 
 const ServiceRequests = () => {
   const { state, isAuthenticated } = useAuth();
-  const { locationText, isRefreshing, refreshLocation } = useLocation();
-
-  const [requests, setRequests] = useState<ServiceRequest[]>([]);
+  const [requests, setRequests] = useState<ServiceRequest[]>([]); //???
   const [isLoading, setIsLoading] = useState(true);
   const [selectedRequest, setSelectedRequest] = useState<ServiceRequest | null>(
     null,
   );
   const [isConfirming, setIsConfirming] = useState(false);
 
-  // ดึงรายการงานจาก API
+  // Fn1: ยิง API เพื่อดึงออเดอร์ที่ลูกค้าชำระเงินแล้ว และพร้อมให้ช่างรับงาน (ตามเงื่อนไขของ backend)
   const fetchOrders = async () => {
     setIsLoading(true);
     try {
       const { data } = await axios.get(
         `${API_URL}/api/technician-orders/orders/available`,
       );
-      setRequests(data.map(mapToServiceRequest));
-    } catch {
+      setRequests(data.map(mapToServiceRequest)); // ??
+    } catch (err) {
+      console.error("Error fetching orders", err);
       toast.error("ไม่สามารถโหลดรายการงานได้ กรุณาลองใหม่อีกครั้ง");
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Fn2: รับพิกัดจาก useLocation → PATCH ไป backend → refetch orders ใหม่ (เผื่อมีการอัปเดตงานตาม location)
+  const handleRefreshed = async (lat: number, lng: number) => {
+    try {
+      await axios.patch(`${API_URL}/api/technician-profile/location`, {
+        latitude: lat,
+        longitude: lng,
+      });
+      await fetchOrders();
+    } catch (err) {
+      console.error("Error updating location", err);
+      toast.error("ไม่สามารถอัปเดตตำแหน่งได้");
+    }
+  };
+
+  // ใช้ custom hook สำหรับจัดการ location (ดึงจาก backend ตอนเริ่มต้น, แปลงเป็น text, รีเฟรชจาก GPS)
+  const { locationText, isRefreshing, refreshLocation, initLocation } =
+    useLocation(handleRefreshed);
+
+  // ตอนเริ่มต้น: ดึง orders + location จาก backend
   useEffect(() => {
-    fetchOrders();
+    const init = async () => {
+      await fetchOrders();
+      try {
+        const { data } = await axios.get(
+          `${API_URL}/api/technician-profile/profile`,
+        );
+        await initLocation(
+          data.latitude ? Number(data.latitude) : null,
+          data.longitude ? Number(data.longitude) : null,
+        );
+      } catch (err) {
+        // ไม่มี location ก็ไม่เป็นไร แสดง "ยังไม่มีข้อมูลตำแหน่ง" ตามเดิม
+        console.error("Error initializing location", err);
+      }
+    };
+    init();
   }, []);
 
   // กดรับงาน → เปิด modal
@@ -72,13 +105,13 @@ const ServiceRequests = () => {
     setSelectedRequest(request);
   };
 
-  // ยืนยันรับงาน → POST /api/technician/orders/:id/accept
+  // ยืนยันรับงาน → POST /api/technician-orders/orders/:id/accept
   const handleConfirmAccept = async () => {
     if (!selectedRequest) return;
     setIsConfirming(true);
     try {
       await axios.post(
-        `${API_URL}/api/technician/orders/${selectedRequest.id}/accept`,
+        `${API_URL}/api/technician-orders/orders/${selectedRequest.id}/accept`,
       );
       toast.success("รับงานเรียบร้อยแล้ว");
       setRequests((prev) => prev.filter((r) => r.id !== selectedRequest.id));
@@ -97,10 +130,10 @@ const ServiceRequests = () => {
     }
   };
 
-  // ปฏิเสธงาน → POST /api/technician/orders/:id/reject
+  // ปฏิเสธงาน → POST /api/technician-orders/orders/:id/reject
   const handleReject = async (id: number) => {
     try {
-      await axios.post(`${API_URL}/api/technician/orders/${id}/reject`);
+      await axios.post(`${API_URL}/api/technician-orders/orders/${id}/reject`);
       setRequests((prev) => prev.filter((r) => r.id !== id));
     } catch {
       toast.error("ไม่สามารถปฏิเสธงานได้ กรุณาลองใหม่อีกครั้ง");
