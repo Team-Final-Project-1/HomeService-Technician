@@ -2,10 +2,17 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import TechnicianLayout from "@/components/layout/TechnicianLayout";
 import toast from "react-hot-toast";
+import dynamic from "next/dynamic";
+
 import {
   getJobDetail,
   completeJob,
 } from "@/features/technician/pending/services/technician.api";
+
+const MapView = dynamic(
+  () => import("@/features/technician/pending/components/MapView"),
+  { ssr: false }
+);
 
 export default function TechnicianJobDetail() {
 
@@ -14,6 +21,9 @@ export default function TechnicianJobDetail() {
 
   const [job, setJob] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+
+  // toggle map
+  const [showMap, setShowMap] = useState(false);
 
   /* =========================================================
      FETCH JOB DETAIL
@@ -43,7 +53,6 @@ export default function TechnicianJobDetail() {
 
           service: data.service_names?.join(", ") || "-",
 
-          // ✅ FIX: ใช้ appointment_datetime
           appointment_date: data.appointment_datetime
             ? new Date(data.appointment_datetime).toLocaleString("th-TH", {
                 dateStyle: "medium",
@@ -63,8 +72,11 @@ export default function TechnicianJobDetail() {
 
           phone: data.customer_phone || "-",
 
-        };
+          // 
+          lat: data.customer_lat ?? null,
+          lng: data.customer_lng ?? null,
 
+        };
 
         setJob(formatted);
 
@@ -147,7 +159,39 @@ export default function TechnicianJobDetail() {
           <Row label="หมวดหมู่" value="บริการซ่อม" />
           <Row label="รายการ" value={job.service} />
           <Row label="วันนัดหมาย" value={job.appointment_date} />
-          <Row label="สถานที่" value={job.address} />
+
+          {/* 🔥 LOCATION + BUTTON */}
+          <div className="grid grid-cols-3 gap-4">
+
+            <div className="text-gray-500">
+              สถานที่
+            </div>
+
+            <div className="col-span-2 font-medium">
+
+              <p>{job.address}</p>
+
+              {/*  ปุ่มดูแผนที่ */}
+              {job.lat && job.lng && (
+                <button
+                  onClick={() => setShowMap(!showMap)}
+                  className="text-blue-600 text-sm mt-1 hover:underline"
+                >
+                  {showMap ? "ซ่อนแผนที่" : "ดูแผนที่"}
+                </button>
+              )}
+
+              {/* แสดง map เมื่อกด */}
+              {showMap && job.lat && job.lng && (
+                <div className="mt-3">
+                  <MapView lat={job.lat} lng={job.lng} />
+                </div>
+              )}
+
+            </div>
+
+          </div>
+
           <Row label="รหัสคำสั่งซ่อม" value={job.order_code} />
           <Row label="ราคารวม" value={`${job.price?.toLocaleString()} ฿`} />
           <Row label="ผู้รับบริการ" value={job.customer_name} />
