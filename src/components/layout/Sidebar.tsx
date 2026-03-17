@@ -72,7 +72,7 @@ const Sidebar = () => {
   const fetchCounters = async () => {
     try {
 
-      const res = await api.get("/technician-pending/counters");
+      const res = await api.get("/technician/counters");
 
       setCounters(res.data);
 
