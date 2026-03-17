@@ -94,15 +94,15 @@ const Sidebar = () => {
      ทุก 5 วินาที
   ========================================================= */
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    const interval = setInterval(() => {
-      fetchCounters();
-    }, 5000);
+  //   const interval = setInterval(() => {
+  //     fetchCounters();
+  //   }, 5000);
 
-    return () => clearInterval(interval);
+  //   return () => clearInterval(interval);
 
-  }, []);
+  // }, []);
 
   return (
     <>
