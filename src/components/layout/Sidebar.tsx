@@ -9,6 +9,7 @@ import {
   LogOut,
   X,
   Menu,
+  LayoutDashboard,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import api from "@/lib/api";
@@ -21,6 +22,12 @@ export const SIDEBAR_WIDTH = 260;
 ========================================================= */
 
 export const menuItems = [
+  {
+    name: "Dashboard",
+    path: "/dashboard/dashboard",
+    icon: <LayoutDashboard size={20} strokeWidth={1.5} />,
+    key: "dashboard",
+  },
   {
     name: "คำขอบริการซ่อม",
     path: "/service-requests",
