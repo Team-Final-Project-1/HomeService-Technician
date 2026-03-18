@@ -5,11 +5,10 @@ import api from "@/lib/api";
 ================================ */
 
 export const getPendingJobs = async () => {
-  console.log("🔥 CALL API");
+
 
   const res = await api.get("/technician/pending");
 
-  console.log("🔥 RESPONSE:", res.data);
 
   return res.data;
 };

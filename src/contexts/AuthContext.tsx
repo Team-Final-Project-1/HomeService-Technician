@@ -95,7 +95,6 @@ function AuthProvider({ children }: AuthProviderProps) {
         },
       );
 
-      console.log("User data fetched:", response.data);
       // เมื่อได้รับข้อมูลผู้ใช้สำเร็จ ให้ตั้งสถานะ user เป็นข้อมูลที่ได้รับจาก API และ getUserLoading เป็น false เพื่อแสดงว่าการโหลดข้อมูลผู้ใช้เสร็จสิ้น
       setState((prevState) => ({
         ...prevState,

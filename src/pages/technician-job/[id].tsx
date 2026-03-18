@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import TechnicianLayout from "@/components/layout/TechnicianLayout";
-import toast from "react-hot-toast";
+import {toast} from "sonner"
 import dynamic from "next/dynamic";
 
 import {

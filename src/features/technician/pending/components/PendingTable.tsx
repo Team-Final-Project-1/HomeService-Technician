@@ -56,7 +56,6 @@ export default function PendingTable({
 
         });
 
-        console.log("🔥 FORMATTED JOBS:", formatted); // debug ได้
 
         setJobs(formatted);
 
