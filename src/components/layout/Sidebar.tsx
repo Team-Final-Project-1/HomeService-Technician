@@ -35,7 +35,7 @@ export const menuItems = [
     key: "pending",
   },
   {
-    name: "รายการที่รอดำเนินการ",
+    name: "งานรอดำเนินการ",
     path: "/pending-items",
     icon: <ClipboardList size={20} strokeWidth={1.5} />,
     key: "in_progress",
@@ -78,13 +78,10 @@ const Sidebar = () => {
   const fetchCounters = async () => {
     try {
       const res = await api.get("/technician/counters");
-      const pendingFromStorage = Number(
-        localStorage.getItem("pendingCount") ?? 0,
-      );
-      console.log("pendingCount from localStorage:", pendingFromStorage); // ✅ เพิ่ม log เพื่อตรวจสอบค่า
       setCounters({
-        ...res.data,
-        pending: Number(localStorage.getItem("pendingCount") ?? 0),
+        pending: Number(res.data.pending),
+        in_progress: Number(res.data.in_progress),
+        completed: Number(res.data.completed),
       });
     } catch (error) {
       console.error("Error fetching counters:", error);
