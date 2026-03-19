@@ -84,7 +84,7 @@ export const DashboardSummaryCards: FC<Props> = ({
           </div>
         </div>
         <p className="text-[24px] font-bold text-gray-900">
-          {stats.total_hours}
+          {(stats.total_hours ?? 0).toFixed(2)}
         </p>
         <p className="mt-1 text-[12px] text-gray-500">
           เวลาที่ใช้ในการทำงานซ่อมทั้งหมด (ชั่วโมง)

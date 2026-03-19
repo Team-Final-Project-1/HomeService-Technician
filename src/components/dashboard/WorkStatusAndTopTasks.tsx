@@ -106,6 +106,11 @@ export const WorkStatusAndTopTasks: FC<Props> = ({
         </p>
 
         <div className="space-y-2 text-[13px]">
+          {!isLoading && topTasks.length === 0 && (
+            <div className="rounded-xl bg-gray-50 px-3 py-3 text-[12px] text-gray-500">
+              ยังไม่มีข้อมูลอันดับประเภทงาน (TOP 5)
+            </div>
+          )}
           {topTasks.map((task, index) => {
             const rank = index + 1;
             const rankStyles =
