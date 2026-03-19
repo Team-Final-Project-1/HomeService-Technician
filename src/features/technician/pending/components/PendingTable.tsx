@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import StatusBadge from "@/components/StatusBadge";
-import { getPendingJobs } from "../services/pending.api";
+import { getPendingJobs } from "@/features/technician/pending/services/technician.api";
 
 type SortType = "nearest" | "latest";
 
@@ -9,6 +9,16 @@ type Props = {
   search: string;
   service: string;
   sort: SortType;
+};
+
+type Job = {
+  id: number;
+  service_names: string[];
+  service_text: string;
+  appointment_datetime: string; 
+  order_code: string;
+  price: number;
+  status: "pending" | "in_progress" | "completed";
 };
 
 export default function PendingTable({
@@ -19,74 +29,118 @@ export default function PendingTable({
 
   const router = useRouter();
 
-  // ================= STATE =================
-  const [jobs, setJobs] = useState<any[]>([]);
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // ================= FETCH API =================
+  /* ================= FETCH API ================= */
+
   useEffect(() => {
+
     const fetchJobs = async () => {
+
       try {
+
         const data = await getPendingJobs();
 
-        console.log("API DATA:", data);
+        const formatted: Job[] = data.map((job: any) => {
 
-        // แปลง format backend → frontend
-        const formatted = data.map((job: any) => ({
-          id: job.id,
-          service: job.services?.[0] || "-",
-          appointment_date: new Date(job.created_at).toLocaleString("th-TH"),
-          order_code: `AD${String(job.id).padStart(8, "0")}`,
-          price: job.total_price,
-          status: job.status,
-        }));
+          return {
+            id: job.id,
+            service_names: job.service_names || [],
+            service_text: job.service_names?.join(", ") || "-",
+            appointment_datetime: job.appointment_datetime,
+            order_code: job.order_code,
+            price: job.net_price,
+            status: job.service_status
+          };
+
+        });
+
 
         setJobs(formatted);
 
       } catch (error) {
+
         console.error("Error fetching pending jobs:", error);
+
+      } finally {
+
+        setLoading(false);
+
       }
+
     };
 
     fetchJobs();
+
   }, []);
 
-  // ================= FILTER =================
-  let filteredJobs = jobs
-    .filter((job) => job.status === "pending")
-    .filter((job) =>
-      job.service.toLowerCase().includes(search.toLowerCase())
-    );
+  /* ================= FILTER ================= */
+
+  let filteredJobs = jobs.filter((job) =>
+    job.service_text.toLowerCase().includes(search.toLowerCase())
+  );
 
   if (service !== "ทั้งหมด" && service !== "all") {
-    filteredJobs = filteredJobs.filter(
-      (job) => job.service === service
+
+    filteredJobs = filteredJobs.filter((job) =>
+      job.service_names.includes(service)
     );
+
   }
 
-  // ================= SORT =================
+  /* ================= SORT ================= */
+
   if (sort === "nearest") {
+
     filteredJobs = [...filteredJobs].sort(
       (a, b) =>
-        new Date(a.appointment_date).getTime() -
-        new Date(b.appointment_date).getTime()
+        new Date(a.appointment_datetime).getTime() -
+        new Date(b.appointment_datetime).getTime()
     );
+
   }
 
   if (sort === "latest") {
+
     filteredJobs = [...filteredJobs].sort(
       (a, b) =>
-        new Date(b.appointment_date).getTime() -
-        new Date(a.appointment_date).getTime()
+        new Date(b.appointment_datetime).getTime() -
+        new Date(a.appointment_datetime).getTime()
     );
+
+  }
+
+  /* ================= LOADING ================= */
+
+  if (loading) {
+
+    return (
+      <div className="p-10 text-center text-gray-400">
+        กำลังโหลดข้อมูล...
+      </div>
+    );
+
+  }
+
+  /* ================= EMPTY ================= */
+
+  if (filteredJobs.length === 0) {
+
+    return (
+      <div className="p-10 text-center text-gray-400">
+        ไม่มีงานในขณะนี้
+      </div>
+    );
+
   }
 
   return (
+
     <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
 
-      {/* TABLE */}
       <table className="w-full text-sm table-fixed">
 
-        {/* HEADER */}
         <thead className="bg-[#F1F5F9] text-gray-700 font-semibold">
           <tr>
             <th className="p-4 text-left">บริการ</th>
@@ -98,19 +152,23 @@ export default function PendingTable({
           </tr>
         </thead>
 
-        {/* BODY */}
         <tbody>
+
           {filteredJobs.map((job) => (
+
             <tr
               key={job.id}
               className="border-t hover:bg-blue-50 transition"
             >
+
               <td className="p-4 font-medium text-gray-900 break-all">
-                {job.service}
+                {job.service_text}
               </td>
 
               <td className="p-4 text-gray-600">
-                {job.appointment_date}
+                {job.appointment_datetime
+                  ? new Date(job.appointment_datetime).toLocaleString("th-TH")
+                  : "-"}
               </td>
 
               <td className="p-4 text-gray-500 break-all">
@@ -118,7 +176,7 @@ export default function PendingTable({
               </td>
 
               <td className="p-4 font-semibold text-blue-600">
-                {job.price} ฿
+                {job.price?.toLocaleString()} ฿
               </td>
 
               <td className="p-4">
@@ -126,6 +184,7 @@ export default function PendingTable({
               </td>
 
               <td className="p-4 text-center">
+
                 <button
                   onClick={() =>
                     router.push(`/technician-job/${job.id}`)
@@ -142,6 +201,7 @@ export default function PendingTable({
                     transition
                   "
                 >
+
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
@@ -155,14 +215,21 @@ export default function PendingTable({
                     <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                     <path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/>
                   </svg>
+
                 </button>
+
               </td>
 
             </tr>
+
           ))}
+
         </tbody>
 
       </table>
+
     </div>
+
   );
+
 }

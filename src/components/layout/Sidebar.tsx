@@ -79,7 +79,7 @@ const Sidebar = () => {
   const fetchCounters = async () => {
     try {
 
-      const res = await api.get("/technician-pending/counters");
+      const res = await api.get("/technician/counters");
 
       setCounters(res.data);
 
@@ -101,15 +101,15 @@ const Sidebar = () => {
      ทุก 5 วินาที
   ========================================================= */
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    const interval = setInterval(() => {
-      fetchCounters();
-    }, 5000);
+  //   const interval = setInterval(() => {
+  //     fetchCounters();
+  //   }, 5000);
 
-    return () => clearInterval(interval);
+  //   return () => clearInterval(interval);
 
-  }, []);
+  // }, []);
 
   return (
     <>
