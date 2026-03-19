@@ -182,7 +182,7 @@ export default function TechnicianJobDetail() {
               {userId && job.status === "in_progress" && (
                 <button
                   onClick={() => router.push(`/chat/${job.id}`)}
-                  className="relative w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center shadow active:scale-95"
+                  className="relative w-9 h-9 rounded-full bg-green-600 text-white flex items-center justify-center shadow active:scale-95"
                 >
                   💬
 
