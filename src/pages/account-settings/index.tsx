@@ -4,7 +4,7 @@ import TechnicianLayout from "@/components/layout/TechnicianLayout";
 import axios from "axios";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
-import SkeletonLoader from "./SkeletonLoader";
+import SkeletonLoader from "@/components/account-settings/SkeletonLoader";
 import { useAuth } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { useLocation } from "@/hooks/useLocation";

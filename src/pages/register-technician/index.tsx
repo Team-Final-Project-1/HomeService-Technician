@@ -2,7 +2,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthenticationRoute from "@/components/auth/AuthenticationRoute";
-import RegisterModal from "./RegisterModal";
+import RegisterModal from "@/components/register-technician/RegisterModal";
 import {
   Loader2,
   Wrench,

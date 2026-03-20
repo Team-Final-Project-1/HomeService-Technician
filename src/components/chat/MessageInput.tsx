@@ -1,26 +1,26 @@
 type Props = {
-  text: string
-  setText: (val: string) => void
-  sendMessage: () => void
-  handleTyping: (val: string) => void
-}
+  text: string;
+  setText: (val: string) => void;
+  sendMessage: () => void;
+  handleTyping: (val: string) => void;
+  sendImage?: (imageUrl: string) => void;
+};
 
 export default function MessageInput({
   text,
   setText,
   sendMessage,
-  handleTyping
+  handleTyping,
+  sendImage,
 }: Props) {
-
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      sendMessage()
+      sendMessage();
     }
-  }
+  };
 
   return (
     <div className="flex items-center gap-2 p-3 bg-white border-t">
-
       <input
         value={text}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -36,14 +36,11 @@ export default function MessageInput({
         disabled={!text.trim()}
         className={`
           px-4 py-2 rounded-full text-white text-sm
-          ${text.trim()
-            ? "bg-blue-600"
-            : "bg-gray-300 cursor-not-allowed"}
+          ${text.trim() ? "bg-blue-600" : "bg-gray-300 cursor-not-allowed"}
         `}
       >
         ➤
       </button>
-
     </div>
-  )
+  );
 }

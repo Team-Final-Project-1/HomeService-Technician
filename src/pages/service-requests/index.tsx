@@ -1,18 +1,18 @@
 import { useState, useEffect, useRef } from "react";
 import { MapPin, Bell } from "lucide-react";
 import TechnicianLayout from "@/components/layout/TechnicianLayout";
-import ServiceRequestCard, { ServiceRequest } from "./ServiceRequestCard";
-import AcceptModal from "./AcceptModal";
+import ServiceRequestCard, { ServiceRequest } from "@/components/service-requests/ServiceRequestCard";
+import AcceptModal from "@/components/service-requests/AcceptModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/router";
 import { useLocation } from "@/hooks/useLocation";
 import { Spinner } from "@/components/ui/spinner";
 import axios from "axios";
 import { toast } from "sonner";
-import RejectModal from "./RejecModal";
+import RejectModal from "@/components/service-requests/RejecModal";
 import dynamic from "next/dynamic";
 
-const MapModal = dynamic(() => import("./MapModal"), { ssr: false });
+const MapModal = dynamic(() => import("@/components/service-requests/MapModal"), { ssr: false });
 
 const API_URL = (process.env.NEXT_PUBLIC_API_URL as string).replace(/\/$/, "");
 

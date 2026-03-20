@@ -240,6 +240,3 @@ const HistoryList: React.FC<HistoryListProps> = ({ onViewDetail }) => {
 };
 
 export default HistoryList;
-
-
-

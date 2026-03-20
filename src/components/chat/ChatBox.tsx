@@ -28,6 +28,7 @@ type Props = {
   role: "user" | "technician"
   customer?: ChatUser | null
   technician?: ChatUser | null
+  sendImage?: (imageUrl: string) => void
 }
 
 // =======================
@@ -41,7 +42,7 @@ export default function ChatBox({
   userId,
   role,
   customer,
-  technician
+  technician,
 }: Props) {
 
   const [messages, setMessages] = useState<Message[]>([])

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import TechnicianLayout from "@/components/layout/TechnicianLayout";
-import HistoryList from "./HistoryList";
-import HistoryDetail from "./HistoryDetail";
+import HistoryList from "@/components/history/HistoryList";
+import HistoryDetail from "@/components/history/HistoryDetail";
 import {
   HistoryDetailData,
   HistoryOrder,

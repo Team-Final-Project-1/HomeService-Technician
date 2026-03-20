@@ -4,7 +4,7 @@ import { HistoryDetailData } from "@/services/history/history.types";
 import dynamic from "next/dynamic";
 
 // Dynamically import the map component (Leaflet requires window/document)
-const LeafletMap = dynamic(() => import("./LeafletMap"), { ssr: false });
+const LeafletMap = dynamic(() => import("@/components/history/LeafletMap"), { ssr: false });
 
 interface HistoryDetailProps {
   order: HistoryDetailData;

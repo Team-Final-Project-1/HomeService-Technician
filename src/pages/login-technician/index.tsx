@@ -3,7 +3,7 @@ import { useState } from "react";
 import type { ChangeEvent } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthenticationRoute from "@/components/auth/AuthenticationRoute";
-import LoginModal from "./LoginModal";
+import LoginModal from "@/components/login-technician/LoginModal";
 import { Loader2, Wrench, Mail, Lock, ChevronRight, Star } from "lucide-react";
 
 interface FormErrors {
