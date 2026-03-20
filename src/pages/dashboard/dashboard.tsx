@@ -65,7 +65,8 @@ const TechnicianDashboardPage = () => {
     const fetchDashboard = async () => {
       try {
         setIsLoading(true);
-        // baseURL: "http://localhost:4000/api" → final URL: /technician-dashboard
+        // baseURL comes from `NEXT_PUBLIC_API_URL` via `src/lib/api.ts`
+        // -> final URL: /api/technician-dashboard
         const res = await api.get<TechnicianDashboardResponse>(
           "/technician-dashboard",
         );

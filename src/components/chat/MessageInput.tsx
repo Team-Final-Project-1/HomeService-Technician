@@ -32,9 +32,13 @@ export default function MessageInput({
     formData.append("image", file)
 
     try {
-      const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"
+      const API = (process.env.NEXT_PUBLIC_API_URL as string)
+        .replace(/\/$/, "")
       const BASE = API.endsWith("/api") ? API : `${API}/api`
-      const res = await fetch(`${BASE}/upload`, { method: "POST", body: formData })
+      const res = await fetch(`${BASE}/upload`, {
+        method: "POST",
+        body: formData,
+      })
       const data = await res.json()
       if (data?.url) sendImage(data.url)
     } catch (err) {

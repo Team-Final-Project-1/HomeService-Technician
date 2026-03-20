@@ -14,7 +14,7 @@ import dynamic from "next/dynamic";
 
 const MapModal = dynamic(() => import("./MapModal"), { ssr: false });
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+const API_URL = (process.env.NEXT_PUBLIC_API_URL as string).replace(/\/$/, "");
 
 const formatThaiDate = (dateStr: string): string => {
   const date = new Date(dateStr);

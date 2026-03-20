@@ -56,6 +56,12 @@ const AuthContext = React.createContext<AuthContextValue | undefined>(
 
 // Provider component ที่จะครอบคลุมส่วนของแอปที่ต้องการเข้าถึงข้อมูลการ Authentication
 function AuthProvider({ children }: AuthProviderProps) {
+  const apiBaseUrlRaw = process.env.NEXT_PUBLIC_API_URL as string;
+  // Ensure no trailing slash so concatenation like `${apiBaseUrl}/api/...` is stable.
+  const apiBaseUrl = apiBaseUrlRaw.endsWith("/")
+    ? apiBaseUrlRaw.slice(0, -1)
+    : apiBaseUrlRaw;
+
   // สถานะของ Authentication ที่จะถูกจัดการใน Context
   // ประกอบด้วยสถานะการโหลด (loading), ข้อผิดพลาด (error), และข้อมูลผู้ใช้ (user) ซึ่งจะถูกอัปเดตตามการกระทำต่าง ๆ เช่น การเข้าสู่ระบบ การลงทะเบียน และการดึงข้อมูลผู้ใช้
   const [state, setState] = useState<AuthState>({
@@ -87,7 +93,7 @@ function AuthProvider({ children }: AuthProviderProps) {
         getUserLoading: true,
       }));
       const response = await axios.get(
-        "http://localhost:4000/api/auth/get-user",
+        `${apiBaseUrl}/api/auth/get-user`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -136,7 +142,7 @@ function AuthProvider({ children }: AuthProviderProps) {
       setState((prevState) => ({ ...prevState, loading: true, error: null }));
       // ส่งคำขอเข้าสู่ระบบไปยัง API และรอผลลัพธ์โดยแนบข้อมูลการเข้าสู่ระบบที่ผู้ใช้กรอกเข้ามาเข้าไปกับ request ผ่าน axios.post
       const response = await axios.post(
-        "http://localhost:4000/api/auth/login",
+        `${apiBaseUrl}/api/auth/login`,
         data,
       );
       // เมื่อการเข้าสู่ระบบสำเร็จ ให้ดึง token ที่ได้รับจาก API และเก็บไว้ใน localStorage เพื่อใช้ในการตรวจสอบสิทธิ์ในการเข้าถึงข้อมูลผู้ใช้ในอนาคต จากนั้นตั้งสถานะ loading เป็น false และล้าง error
@@ -146,7 +152,7 @@ function AuthProvider({ children }: AuthProviderProps) {
       await fetchUser();
       // ← ดึง user ล่าสุดจาก localStorage แทนการอ่านจาก state
       const userResponse = await axios.get(
-        "http://localhost:4000/api/auth/get-user",
+        `${apiBaseUrl}/api/auth/get-user`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -177,7 +183,7 @@ function AuthProvider({ children }: AuthProviderProps) {
       setState((prevState) => ({ ...prevState, loading: true, error: null }));
       // ส่งคำขอลงทะเบียนไปยัง API และรอผลลัพธ์โดยแนบข้อมูลการลงทะเบียนที่ผู้ใช้กรอกเข้ามาเข้าไปกับ request ผ่าน axios.post
       await axios.post(
-        "http://localhost:4000/api/auth/register/technician",
+        `${apiBaseUrl}/api/auth/register/technician`,
         data,
       );
     } catch (error) {
