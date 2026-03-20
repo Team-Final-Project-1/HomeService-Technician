@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import {
@@ -12,7 +12,6 @@ import {
   LayoutDashboard,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import api from "@/lib/api";
 
 export const SIDEBAR_WIDTH = 260;
 
@@ -58,58 +57,6 @@ const Sidebar = () => {
   const router = useRouter();
   const currentPath = router.pathname;
   const { logout } = useAuth();
-
-  /* =========================================================
-     COUNTER STATE
-     เก็บจำนวนงานจาก backend
-  ========================================================= */
-
-  const [counters, setCounters] = useState({
-    pending: 0,
-    in_progress: 0,
-    completed: 0,
-  });
-
-  /* =========================================================
-     FETCH COUNTERS
-     เรียก API /technician-pending/counters
-  ========================================================= */
-
-  const fetchCounters = async () => {
-    try {
-      const res = await api.get("/technician/counters");
-      setCounters({
-        pending: Number(res.data.pending),
-        in_progress: Number(res.data.in_progress),
-        completed: Number(res.data.completed),
-      });
-    } catch (error) {
-      console.error("Error fetching counters:", error);
-    }
-  };
-
-  /* =========================================================
-     โหลด counters ตอนเปิดหน้า
-  ========================================================= */
-
-  useEffect(() => {
-    fetchCounters();
-  }, [router.pathname]);
-
-  /* =========================================================
-     AUTO REFRESH COUNTERS
-     ทุก 5 วินาที
-  ========================================================= */
-
-  // useEffect(() => {
-
-  //   const interval = setInterval(() => {
-  //     fetchCounters();
-  //   }, 5000);
-
-  //   return () => clearInterval(interval);
-
-  // }, []);
 
   return (
     <>
@@ -186,14 +133,6 @@ const Sidebar = () => {
           {menuItems.map((item) => {
             const isActive = currentPath === item.path;
 
-            /* =========================================================
-               ดึง badge จาก counters
-            ========================================================= */
-
-            const badgeValue = item.key
-              ? counters[item.key as keyof typeof counters]
-              : null;
-
             return (
               <Link
                 key={item.path}
@@ -211,13 +150,6 @@ const Sidebar = () => {
                 <span className="flex-1 text-[16px] text-gray-100 font-medium">
                   {item.name}
                 </span>
-
-                {/* Badge */}
-                {badgeValue !== null && badgeValue > 0 && (
-                  <span className="bg-[#C82438] text-white text-xs w-7 h-7 flex items-center justify-center rounded-full shrink-0">
-                    {badgeValue}
-                  </span>
-                )}
               </Link>
             );
           })}

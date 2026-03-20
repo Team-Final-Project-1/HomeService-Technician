@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { getSocket } from "@/lib/socket"
+import api from "@/lib/api"
 
 type Props = {
   orderId: string
@@ -19,26 +20,12 @@ export default function ChatBadge({ orderId, userId }: Props) {
 
     const loadUnread = async () => {
       try {
-
-        const url = `/api/chat/messages/unread/${orderId}/${userId}`
-
-        console.log("📊 unread fetch:", url)
-
-        const res = await fetch(url)
-
-        if (!res.ok) {
-          console.warn("❌ unread status:", res.status)
-          return
-        }
-
-        const data = await res.json()
-
-        console.log("✅ unread count:", data.count)
-
-        setCount(data.count || 0)
-
-      } catch (err) {
-        console.error("❌ unread error:", err)
+        const res = await api.get<{ count?: number }>(
+          `/chat/messages/unread/${orderId}/${userId}`
+        )
+        setCount(Number(res.data?.count) || 0)
+      } catch {
+        setCount(0)
       }
     }
 
@@ -57,16 +44,14 @@ export default function ChatBadge({ orderId, userId }: Props) {
     const socket = getSocket()
 
     if (!socket) {
-      console.warn("⚠️ socket not ready")
       return
     }
 
-    const handleNewMessage = (msg: any) => {
-
+    const handleNewMessage = (msg: {
+      order_id?: string | number
+      sender_id?: string | number
+    }) => {
       if (!msg) return
-
-      // debug
-      console.log("📩 receive_message:", msg)
 
       if (
         String(msg.order_id) === String(orderId) &&
@@ -92,7 +77,6 @@ export default function ChatBadge({ orderId, userId }: Props) {
   useEffect(() => {
 
     const handleFocus = () => {
-      console.log("👁️ reset unread")
       setCount(0)
     }
 
